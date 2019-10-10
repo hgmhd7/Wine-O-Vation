@@ -37,7 +37,7 @@ Base.prepare(db.engine, reflect=True)
 
 # # Save references to each table
 # Samples_Metadata = Base.classes.sample_metadata
-master_wine_table = Base.classes.UPDATED_master_wine_table
+master_wine_table = Base.classes.master_wine_table
 wine_predictions = Base.classes.wine_predictions_table
 
 

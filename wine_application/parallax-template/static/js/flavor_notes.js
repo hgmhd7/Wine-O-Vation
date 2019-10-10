@@ -119,17 +119,17 @@ d3.json("../static/js/flavor_note_words.json", function(flavor_note_words) {
   // });
 
   d3.select("#name").on("click", function() {
-    clearTimeout(timeout);
+    // clearTimeout(timeout);
     order("name");
   });
 
   d3.select("#count").on("click", function() {
-    clearTimeout(timeout);
+    // clearTimeout(timeout);
     order("count");
   });
 
   d3.select("#group").on("click", function() {
-    clearTimeout(timeout);
+    // clearTimeout(timeout);
     order("group");
     // d3.select.document.getElementById("cluster").node().focus();
   });
@@ -152,9 +152,31 @@ d3.json("../static/js/flavor_note_words.json", function(flavor_note_words) {
         .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
   }
 
+
+
+  function scrollFunction(){
+    if (document.body.scrollTop > 10000 || document.documentElement.scrollTop > 1000){
+      console.log('scroll');
+      order("group");
+    }
+  };
+
+  var count = 0;
+
+  window.onscroll = function() {
+    console.log(count);
+    
+    if (count == 0 && (document.body.scrollTop > 10000 || document.documentElement.scrollTop > 1000)){
+    scrollFunction()
+    count = 1}
+
+  };
+
+  
+
   var timeout = setTimeout(function() {
     order("group");
     // d3.select("#name").property("selectedIndex", 2).node().focus();
-  }, 5000);
+  }, 50000000000000000000000);
 });
 

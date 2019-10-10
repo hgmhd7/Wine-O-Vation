@@ -73,10 +73,10 @@
 
                     <div class="row">
 
-                        <h4>Fill in info for ALL fields, submit, and scroll down to see what "JSON"melier thinks about
+                        <h4>Fill in info for ALL fields, click submit and see what "JSON"melier thinks about
                             your pick...</h4>
 
-                        <form action="{{ url_for('predict_wine_score')}}" id="form" method="POST">
+                        <form action="{{ url_for('predict_wine_score')}}#afterForm" id="form" method="POST">
 
 
                             <div class="row">
@@ -262,10 +262,12 @@
         <div class="section">
 
             <div class="row">
+
+                <a name="afterForm"></a>
+
                 <div class="col lg12 md12 s12 " style="padding-left: 567px">
 
                     <div class="card large col lg4 m4 s12 center" style="width: 1000px; height: 900px" id="score_card">
-
 
                         <div class="card-image waves-effect waves-block waves-light center">
                             <img class="activator" src="../static/media/wine_4.jpg">
@@ -289,6 +291,7 @@
                             </span>
 
                         </div>
+
                     </div>
                 </div>
             </div>
