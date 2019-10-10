@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wine-O Vation</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="../static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://d3js.org/d3.v2.min.js" charset="utf-8"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+</head>
+
+
+<body>
+
+    <nav class="black" role="navigation">
+        <div class="nav-wrapper container-fluid">
+            <a id="logo-container" href="/" class="brand-logo" style="padding-left: 30px">Data Winetists</a>
+            <ul class="right hide-on-med-and-down" style="padding-right: 30px">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/story_of_wine">THE STORY OF WINE</a></li>
+                <li><a href="/flavor_notes">A MOUTHFUL</a></li>
+                <li><a href="/virtual_sommelier">VIRTUAL SOMMELIER</a></li>
+                <li><a href="/wine_recommender">YOUR RECOMMENDATION</a></li>
+            </ul>
+
+            <ul id="nav-mobile" class="sidenav">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/story_of_wine">THE STORY OF WINE</a></li>
+                <li><a href="/flavor_notes">A MOUTHFUL</a></li>
+                <li><a href="/virtual_sommelier">VIRTUAL SOMMELIER</a></li>
+                <li><a href="/wine_recommender">YOUR RECOMMENDATION</a></li>
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+
+
+    <div id="index-banner" class="parallax-container">
+        <div class="section no-pad-bot">
+            <div class="container">
+                <br><br>
+                <h1 class="header center teal-text text-darken-2">Wine-O Vation</h1>
+                <div class="row center">
+                    <h5 class="header col s12 dark">brought to you by the Data Winetists</h5>
+                </div>
+                <br><br>
+
+            </div>
+        </div>
+        <div class="parallax"><img src="../static/media/wine_8.jpg" alt="Unsplashed background img 1"></div>
+    </div>
+
+
+    <div class="container">
+        <div class="section">
+
+            <!--   Icon Section   -->
+            <div class="row">
+
+                <div class="col lg12 m12 s12">
+
+
+
+                    <div class="row">
+
+                        <h4>Fill in info for ALL fields, submit, and scroll down to see what "JSON"melier thinks about
+                            your pick...</h4>
+
+                        <form action="{{ url_for('predict_wine_score')}}" id="form" method="POST">
+
+
+                            <div class="row">
+                                <label>Wine Type</label>
+
+                                <select id="wine_type" name="wine_type"
+                                    onchange="change_wine_type(this.id, 'taste_notes')" required>
+                                    <option value="" disabled selected>select wine type</option>
+                                    <option value="Red">Red</option>
+                                    <option value="White">White</option>
+                                    <option value="Rose">Rose</option>
+                                    <option value="Sparkling">Sparkling</option>
+                                </select>
+                            </div>
+
+
+
+                            <div class="row">
+                                <label>Taste Notes</label>
+                                <select id="taste_notes" name="taste_notes" required>
+                                    <option value="" disabled selected>select wine taste notes</option>
+                                </select>
+                            </div>
+
+
+
+
+                            <div class="row">
+                                <label>Country of Origin</label>
+                                <select id="wine_country" name="wine_country" class="validate" required>
+                                    <option value="" disabled selected>select wine country</option>
+                                    <option value="Argentina">Argentina</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Austria">Austria</option>
+                                    <option value="Brazil">Brazil</option>
+                                    <option value="Bulgaria">Bulgaria</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Chile">Chile</option>
+                                    <option value="France">France</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="Greese">Greese</option>
+                                    <option value="Hungary">Hungary</option>
+                                    <option value="Israel">Israel</option>
+                                    <option value="Italy">Italy</option>
+                                    <option value="Lebanon">Lebanon</option>
+                                    <option value="Mexico">Mexico</option>
+                                    <option value="Maldova">Maldova</option>
+                                    <option value="Moroco">Moroco</option>
+                                    <option value="New Zealand">New Zealand</option>
+                                    <option value="Portugal">Portugal</option>
+                                    <option value="Romania">Romania</option>
+                                    <option value="Slovenia">Slovenia</option>
+                                    <option value="South Africa">South Africa</option>
+                                    <option value="Spain">Spain</option>
+                                    <option value="Turkey">Turkey</option>
+                                    <option value="Uruguay">Uruguay</option>
+                                    <option value="United States">United States</option>
+                                </select>
+                            </div>
+
+
+
+                            <div class="row">
+                                <div class="col s12">
+                                    Enter the wines price in dollars (no cents eg. 20 for 20 dollars):
+                                    <div class="input-field inline">
+                                        <input id="number_inline" type="number" class="validate" name="wine_price"
+                                            required>
+                                        <label for="number_inline">Price in dollars. (4 to 3300)</label>
+                                        <span class="helper-text" data-error="Error... Please enter a numeric value"
+                                            data-success="Success">validating
+                                            response...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <script>
+                                $(document).ready(function () {
+                                    $('#wine_type').formSelect();
+                                    $('#taste_notes').formSelect();
+                                    $('#wine_country').formSelect();
+                                    $('#wine_price').formSelect();
+                                });
+                            </script>
+
+
+                            <script>
+                                function gotoBottom() {
+                                    var element = document.getElementById(score_card);
+                                    element.scrollTop = element.scrollHeight - element.clientHeight;
+                                }
+                            </script>
+
+
+
+
+
+
+                            <script>
+                                function change_wine_type(type, taste) {
+
+                                    var type = document.getElementById(type);
+                                    var taste = document.getElementById(taste);
+                                    taste.innerHTML = "";
+
+                                    // console.log(type.value)
+
+                                    if (type.value == "Red") {
+                                        var optionArray = ["|", "light, fruity|light, fruity", "medium-bodied, balanced|medium-bodied, balanced", "full-bodied, robust|full-bodied, robust", "other|other"];
+                                    } else if
+                                        (type.value == "White") {
+                                        var optionArray = ["|", "sweet, juicy, soft|sweet, juicy, soft", "balanced/ complex|balanced/ complex", "dry, briny, crisp, acidic|dry, briny, crisp, acidic", "other|other"];
+                                    } else if
+                                        (type.value == "Rose") {
+                                        var optionArray = ["|", "savory, balanced, complex|savory, balanced, complex", "dry, citris, acidic|dry, citris, acidic", "sweet, wet, fruity, moderate acid|sweet, wet, fruity, moderate acid", "balanced/ other rose|balanced/ other rose"];
+                                    } else if
+                                        (type.value == "Sparkling") {
+                                        var optionArray = ["|", "dry, crisp, briny, acidic|dry, crisp, briny, acidic", "sweet, modest, fruity|sweet, modest, fruity", "balanced, complex, moderate|balanced, complex, moderate", "other|other"];
+                                    }
+
+
+                                    for (var option in optionArray) {
+                                        var pair = optionArray[option].split("|");
+                                        var newOption = document.createElement("option");
+                                        // console.log(optionArray)
+                                        newOption.value = pair[0];
+                                        // console.log(pair)
+                                        newOption.innerHTML = pair[1];
+                                        taste.options.add(newOption);
+                                    }
+                                    $('#taste_notes').formSelect();
+
+
+
+                                }
+                            </script>
+
+
+
+                            <div><button class="btn waves-effect waves-light center" type="submit" name="action"
+                                    onclick="gotoBottom()">Predict
+                                    Wine Score
+                                    <i class="material-icons right">send</i>
+                                </button></div>
+
+                            <!-- <div class="progress"></div>
+                                    <div class="indeterminate"></div>
+                                </div> -->
+                        </form>
+                    </div>
+                </div>
+
+                <!-- <script>console.log("{{testing_1}}")</script> -->
+                <script>console.log("{{wine_type}}")</script>
+                <script>console.log("{{taste_notes}}")</script>
+                <script>console.log("{{wine_country}}")</script>
+                <script>console.log("{{wine_price}}")</script>
+                <script>console.log("{{feed_AI}}")</script>
+                <script>console.log("{{predicted_score}}")</script>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="parallax-container valign-wrapper">
+        <div class="section no-pad-bot">
+            <div class="container">
+                <div class="row center">
+                    <h5 class="header col s12 light">A look into the world of wine from the scienctific perspective.
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="parallax"><img src="../static/media/wine_2.jpg" alt="Unsplashed background img 2"></div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="section">
+
+            <div class="row">
+                <div class="col lg12 md12 s12 " style="padding-left: 567px">
+
+                    <div class="card large col lg4 m4 s12 center" style="width: 1000px; height: 900px" id="score_card">
+
+
+                        <div class="card-image waves-effect waves-block waves-light center">
+                            <img class="activator" src="../static/media/wine_4.jpg">
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title">
+                                <h5>And the score is...</h5> <br><br>
+                                <h1>{{predicted_score}}</h1> <br>
+                                <h5>Click the above picture to look at the details of your selection...</h5>
+                            </span>
+                        </div>
+                        <div class="card-reveal">
+                            <span class="card-title grey-text text-darken-4">
+                                <h4>Wine Type: {{wine_type}} </h4> <br><br>
+                                <h4>Taste Notes/ Descriptors: {{taste_notes}} </h4> <br><br>
+                                <h4>Country of Origin: {{wine_country}} </h4> <br><br>
+                                <h4>Wine Price: ${{wine_price}} </h4> <br><br>
+                                <h4>Verdict: {{message}} </h4>
+
+                                <i class="material-icons right">close</i>
+                            </span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="page-footer teal">
+        <div class="container">
+            <div class="row">
+
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container-fluid" style="padding-left: 25px">
+                Made by <a class="brown-text text-lighten-3">Team Data Winetists</a>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- <script> var instance = M.Tabs.init(); </script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="../static/js/init.js"></script>
+    <script src="../static/js/materialize.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('select').formSelect();
+
+        });
+    </script>
+
+</body>
+
+</html>
