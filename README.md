@@ -1,5 +1,5 @@
 # Wine-O-Vation
-# Wine Analysis and Expoloration.  
+# Wine Analysis and Expoloration  
 
 This is a machine learning project to predict the score of a wine based on reduced set of variables.  Along with the ML, this is also a deep dive into other aspects of the interesting world of wine including taste note analysis, and custimizd recomendations.  
 
