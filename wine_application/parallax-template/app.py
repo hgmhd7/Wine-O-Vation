@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import flask
-import pickle
+import joblib  # Updated from sklearn.externals.joblib
 from flask_material import Material
 import pandas as pd
 import json
@@ -24,7 +24,9 @@ Material(app)
 
 
 # Database Setup
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wine_cellar.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///wine_cellar.sqlite')
+if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
 
 
 db = SQLAlchemy(app)
