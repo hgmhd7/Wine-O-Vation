@@ -3,7 +3,6 @@ import os
 import numpy as np
 import flask
 import joblib  # Updated from sklearn.externals.joblib
-from flask_material import Material
 import pandas as pd
 import json
 import sqlalchemy
@@ -15,7 +14,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 #creating instance of the class
 app=Flask(__name__, static_url_path='/static')
-Material(app)
 
 # Database Setup
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///wine_cellar.sqlite')
