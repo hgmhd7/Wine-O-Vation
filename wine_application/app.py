@@ -13,7 +13,10 @@ from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 #creating instance of the class
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, 
+           template_folder='parallax-template/templates',
+           static_folder='static',
+           static_url_path='/static')
 
 # Database Setup
 basedir = os.path.abspath(os.path.dirname(__file__))
