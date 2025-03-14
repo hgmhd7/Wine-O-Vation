@@ -13,23 +13,32 @@ from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 #creating instance of the class
-app=Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/static')
 
 # Database Setup
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///wine_cellar.sqlite')
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "wine_cellar.sqlite")}')
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
     app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
 
 db = SQLAlchemy(app)
 
-# reflect an existing database into a new modelapp
+# reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables
-Base.prepare(db.engine, reflect=True)
 
-# Save references to each table
-master_wine_table = Base.classes.master_wine_table
-wine_predictions = Base.classes.wine_predictions_table
+try:
+    # reflect the tables
+    Base.prepare(db.engine, reflect=True)
+    
+    # Save references to each table
+    master_wine_table = Base.classes.master_wine_table
+    wine_predictions = Base.classes.wine_predictions_table
+except Exception as e:
+    print(f"Error initializing database: {e}")
+    master_wine_table = None
+    wine_predictions = None
 
 @app.route('/')
 def index():
@@ -85,8 +94,12 @@ def predict_wine_score():
         # Reshape the Data as a Sample not Individual Features
         feed_AI = np.array(clean_data).reshape(1,-1)
 
-        XGB_model = joblib.load('XGB_unscaled_model.pkl')
-        predicted_score = XGB_model.predict(feed_AI)
+        try:
+            XGB_model = joblib.load(os.path.join(basedir, 'XGB_unscaled_model.pkl'))
+            predicted_score = XGB_model.predict(feed_AI)
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            predicted_score = [0]
 
         message = ""
 
@@ -104,6 +117,9 @@ def predict_wine_score():
 
 @app.route('/recommend_wines', methods=["POST"])
 def recommend_wines():
+    if master_wine_table is None:
+        return jsonify({"error": "Database not available"})
+        
     taste_notes = request.form['taste_notes']
     wine_type = request.form['wine_type']
     wine_country = request.form['wine_country']
