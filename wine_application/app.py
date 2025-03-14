@@ -17,7 +17,18 @@ app = Flask(__name__, static_url_path='/static')
 
 # Database Setup
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "wine_cellar.sqlite")}')
+db_path = os.path.join(basedir, "wine_cellar.sqlite")
+model_path = os.path.join(basedir, "XGB_unscaled_model.pkl")
+
+# Check if database exists, if not create it
+if not os.path.exists(db_path):
+    print(f"Warning: Database file not found at {db_path}")
+    # Create an empty database with the required tables
+    engine = create_engine(f'sqlite:///{db_path}')
+    Base = automap_base()
+    Base.metadata.create_all(engine)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', f'sqlite:///{db_path}')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
@@ -95,8 +106,12 @@ def predict_wine_score():
         feed_AI = np.array(clean_data).reshape(1,-1)
 
         try:
-            XGB_model = joblib.load(os.path.join(basedir, 'XGB_unscaled_model.pkl'))
-            predicted_score = XGB_model.predict(feed_AI)
+            if os.path.exists(model_path):
+                XGB_model = joblib.load(model_path)
+                predicted_score = XGB_model.predict(feed_AI)
+            else:
+                print(f"Warning: Model file not found at {model_path}")
+                predicted_score = [0]
         except Exception as e:
             print(f"Error loading model: {e}")
             predicted_score = [0]
