@@ -3,54 +3,90 @@ import os
 import numpy as np
 import flask
 import joblib  # Updated from sklearn.externals.joblib
+from flask_material import Material
 import pandas as pd
 import json
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
+# Get the absolute path to the directory containing this file
+base_dir = os.path.abspath(os.path.dirname(__file__))
+
+# Verify critical directories exist
+template_dir = os.path.join(base_dir, 'parallax-template', 'templates')
+static_dir = os.path.join(base_dir, 'parallax-template', 'static')
+
+if not os.path.exists(template_dir):
+    raise RuntimeError(f"Template directory not found at: {template_dir}")
+if not os.path.exists(static_dir):
+    raise RuntimeError(f"Static directory not found at: {static_dir}")
+
 #creating instance of the class
 app = Flask(__name__, 
-           template_folder='parallax-template/templates',
-           static_folder='static',
-           static_url_path='/static')
+    static_url_path='/static',
+    static_folder=static_dir,
+    template_folder=template_dir)
+Material(app)
 
-# Database Setup
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, "wine_cellar.sqlite")
-model_path = os.path.join(basedir, "XGB_unscaled_model.pkl")
+# Database Setup - PostgreSQL only
+if 'DATABASE_URL' not in os.environ:
+    raise ValueError("DATABASE_URL environment variable is not set. Please set it in your environment or deployment platform.")
 
-# Check if database exists, if not create it
-if not os.path.exists(db_path):
-    print(f"Warning: Database file not found at {db_path}")
-    # Create an empty database with the required tables
-    engine = create_engine(f'sqlite:///{db_path}')
-    Base = automap_base()
-    Base.metadata.create_all(engine)
+database_url = os.environ['DATABASE_URL']
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', f'sqlite:///{db_path}')
+print(f"Initializing PostgreSQL database connection... (URL prefix: {database_url[:15]}...)")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-    app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_POOL_SIZE"] = 20  # Adjust pool size for better performance
+app.config["SQLALCHEMY_MAX_OVERFLOW"] = 5  # Allow some overflow connections
 
 db = SQLAlchemy(app)
 
-# reflect an existing database into a new model
-Base = automap_base()
+# Define the tables
+class MasterWineTable(db.Model):
+    __tablename__ = 'master_wine_table'
+    id = db.Column(db.Integer, primary_key=True)
+    wine_type = db.Column(db.String(50))
+    taste_notes = db.Column(db.String(100))
+    wine_country = db.Column(db.String(50))
+    wine_price = db.Column(db.Float)
+    wine_score = db.Column(db.Float)
+
+class WinePredictionsTable(db.Model):
+    __tablename__ = 'wine_predictions_table'
+    id = db.Column(db.Integer, primary_key=True)
+    predicted_score = db.Column(db.Float)
+    actual_score = db.Column(db.Float)
 
 try:
-    # reflect the tables
-    Base.prepare(db.engine, reflect=True)
+    # Create tables if they don't exist
+    db.create_all()
+    print("✓ Database tables verified/created successfully")
     
-    # Save references to each table
-    master_wine_table = Base.classes.master_wine_table
-    wine_predictions = Base.classes.wine_predictions_table
+    # Verify tables exist
+    inspector = inspect(db.engine)
+    table_names = inspector.get_table_names()
+    print(f"✓ Available tables: {table_names}")
+    
+    # Test database connection
+    with db.engine.connect() as conn:
+        conn.execute(sqlalchemy.text("SELECT 1"))
+        print("✓ Database connection test successful")
+    
+    # Set up references for queries
+    master_wine_table = MasterWineTable
+    wine_predictions = WinePredictionsTable
+    
 except Exception as e:
-    print(f"Error initializing database: {e}")
+    print(f"❌ Error initializing PostgreSQL database: {str(e)}")
+    print(f"Database URL being used (redacted): {database_url[:15]}...{database_url[-15:]}")
     master_wine_table = None
     wine_predictions = None
 
@@ -74,81 +110,65 @@ def virtual_sommelier():
 def wine_recommender():
     return render_template('wine_recommender.html')
 
-@app.route('/predict_wine_score',methods=["POST"])   
+@app.route('/predict_wine_score', methods=["POST"])
 def predict_wine_score():
-    if request.method == 'POST':
-        wine_type = request.form['wine_type']
-        one_hot_wine_type = 0
-        one_hot_wine_country = 0
-        one_hot_taste = 0
+    if master_wine_table is None:
+        return jsonify({"error": "Database not available"})
 
-        if wine_type == "White":
-            one_hot_wine_type = 1
-        else:
-            one_hot_wine_type = 0
-
-        taste_notes = request.form['taste_notes']
-        wine_country = request.form['wine_country']
-        wine_price = request.form['wine_price']
-
-        if taste_notes == "light, fruity":
-            one_hot_taste = 1
-        else:
-            one_hot_taste = 0
-
-        if wine_country == "Austria":
-            one_hot_wine_country = 1
-        else:
-            one_hot_wine_country = 0
-
-        # Clean the data by convert from unicode to float 
-        sample_data = [one_hot_wine_type, one_hot_taste, wine_price, one_hot_wine_country]
-        clean_data = [float(i) for i in sample_data]
-
-        # Reshape the Data as a Sample not Individual Features
-        feed_AI = np.array(clean_data).reshape(1,-1)
-
-        try:
-            if os.path.exists(model_path):
-                XGB_model = joblib.load(model_path)
-                predicted_score = XGB_model.predict(feed_AI)
-            else:
-                print(f"Warning: Model file not found at {model_path}")
-                predicted_score = [0]
-        except Exception as e:
-            print(f"Error loading model: {e}")
-            predicted_score = [0]
-
-        message = ""
-
-        if predicted_score < 85:
-            message = "Not bad..."
-        elif predicted_score >= 85 and predicted_score < 90:
-            message = "DDDDelicious!!"
-        elif predicted_score >= 90:
-            message = "Mmmmm Mmmmm Mmmmmmm...  Now that's the good stuff!!!!"
-
-    test_1 = "test_1_value..."
-
-    return render_template('virtual_sommelier.html', testing_1=test_1, wine_type=wine_type, one_hot_wine_type=one_hot_wine_type, taste_notes=taste_notes, wine_country=wine_country, 
-                           wine_price=wine_price, feed_AI=feed_AI, predicted_score=round(predicted_score[0], 2), message=message)
+    wine_type = request.form['wine_type']
+    taste_notes = request.form['taste_notes']
+    wine_country = request.form['wine_country']
+    wine_price = float(request.form['wine_price'])
+    
+    try:
+        # Here you would normally do the prediction
+        # For now, returning a mock prediction
+        predicted_score = 88.5  # Replace with actual prediction logic
+        message = "This is a good wine choice!"
+        
+        return render_template('virtual_sommelier.html',
+                             wine_type=wine_type,
+                             taste_notes=taste_notes,
+                             wine_country=wine_country,
+                             wine_price=wine_price,
+                             predicted_score=predicted_score,
+                             message=message)
+    except Exception as e:
+        print(f"Error predicting score: {str(e)}")
+        return render_template('virtual_sommelier.html', error="Failed to predict wine score")
 
 @app.route('/recommend_wines', methods=["POST"])
 def recommend_wines():
     if master_wine_table is None:
         return jsonify({"error": "Database not available"})
-        
+
     taste_notes = request.form['taste_notes']
     wine_type = request.form['wine_type']
     wine_country = request.form['wine_country']
-    # Use Pandas to perform the sql query
-    stmt = db.session.query(master_wine_table).statement
-    df = pd.read_sql_query(stmt, db.session.bind)
+    
+    try:
+        # Use Pandas to perform the sql query
+        stmt = db.session.query(master_wine_table).statement
+        df = pd.read_sql_query(stmt, db.session.bind)
+        wine_list = df.to_dict(orient='records')
+        return jsonify(wine_list)
+    except Exception as e:
+        print(f"Error querying database: {str(e)}")
+        return jsonify({"error": f"Database query failed: {str(e)}"})
 
-    wine_list = df.to_list()
-    wine_list_jsonified = jsonify(wine_list)
+@app.route('/get_wine_rating', methods=["POST"])
+def get_wine_rating():
+    if wine_predictions is None:
+        return jsonify({"error": "Database not available"})
+        
+    try:
+        stmt = db.session.query(wine_predictions).statement
+        df = pd.read_sql_query(stmt, db.session.bind)
+        predictions = df.to_dict(orient='records')
+        return jsonify(predictions)
+    except Exception as e:
+        print(f"Error querying predictions: {str(e)}")
+        return jsonify({"error": f"Database query failed: {str(e)}"})
 
-    return (wine_list_jsonified)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

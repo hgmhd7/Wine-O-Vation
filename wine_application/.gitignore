@@ -1,11 +1,32 @@
-# SQLite database files
+# Database
 *.sqlite
 *.db
+*.sqlite3
+*.psql
+*.postgresql
+*.log
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Environment
 .env
@@ -13,11 +34,47 @@ __pycache__/
 env/
 venv/
 ENV/
+.env.local
+.env.development
+.env.test
+.env.production
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
 
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+*.bak
+*.tmp
+*.temp
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+bower_components/
+
+# Distribution
+dist/
+build/
+*.pyc
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/ 
