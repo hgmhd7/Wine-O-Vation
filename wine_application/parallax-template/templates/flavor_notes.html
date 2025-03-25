@@ -24,8 +24,8 @@
 
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="../static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
-  <link href="../static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://d3js.org/d3.v2.min.js" charset="utf-8"></script>
@@ -95,7 +95,7 @@
 
       </div>
     </div>
-    <div class="parallax"><img src="../static/media/wine_8.jpg" alt="Unsplashed background img 1"></div>
+    <div class="parallax"><img src="{{ url_for('static', filename='media/wine_8.jpg') }}" alt="Unsplashed background img 1"></div>
   </div>
 
 
@@ -109,7 +109,7 @@
           <div class="col lg12 m12 s12">
             <h1 class="center">Taste Note Word Cloud</h1>
             <div class="parallax center" style="padding-left: 1050px; padding-top: 100px"><img
-                src="../static/media/bottle_glass_wc.png" alt="Unsplashed background img 1"></div>
+                src="{{ url_for('static', filename='media/bottle_glass_wc.png') }}" alt="Unsplashed background img 1"></div>
 
           </div>
 
@@ -117,7 +117,7 @@
 
 
             <div class="card-image waves-effect waves-block waves-light">
-              <img class="activator" src="../static/media/wine_wc.png">
+              <img class="activator" src="{{ url_for('static', filename='media/wine_wc.png') }}">
             </div>
             <div class="card-content">
               <span class="card-title activator grey-text text-darken-4">Wine Word-Cloud<i
@@ -155,7 +155,7 @@
         </div>
       </div>
     </div>
-    <div class="parallax"><img src="../static/media/wine_2.jpg" alt="Unsplashed background img 2"></div>
+    <div class="parallax"><img src="{{ url_for('static', filename='media/wine_2.jpg') }}" alt="Unsplashed background img 2"></div>
   </div>
 
   <div class="container">
@@ -193,7 +193,7 @@
 
 
             <div class="card-image waves-effect waves-block waves-light">
-              <img class="activator" src="../static/media/wine_2.jpg">
+              <img class="activator" src="{{ url_for('static', filename='media/wine_2.jpg') }}">
             </div>
             <div class="card-content">
               <span class="card-title activator grey-text text-darken-4">So, what does this matrix respresent??? <i
@@ -238,9 +238,9 @@
 
 
   <script> var instance = M.Tabs.init(); </script>
-  <script src="../static/js/init.js"></script>
-  <script src="../static/js/flavor_notes.js"></script>
-  <script src="../static/js/materialize.js"></script>
+  <script src="{{ url_for('static', filename='js/init.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/flavor_notes.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
 
 
 </body>
