@@ -18,7 +18,10 @@ from sklearn.externals import joblib
 
 
 #creating instance of the class
-app=Flask(__name__, static_url_path='/static')
+app = Flask(__name__, 
+    static_url_path='/static',
+    static_folder='static',
+    template_folder='templates')
 Material(app)
 
 
@@ -151,8 +154,13 @@ def predict_wine_score():
             # Reshape the Data as a Sample not Individual Features
             feed_AI = np.array(clean_data).reshape(1,-1)
 
-            XGB_model = joblib.load('XGB_unscaled_model.pkl')
-            predicted_score = XGB_model.predict(feed_AI)
+            model_path = os.path.join(os.path.dirname(__file__), 'XGB_unscaled_model.pkl')
+            if os.path.exists(model_path):
+                XGB_model = joblib.load(model_path)
+                predicted_score = XGB_model.predict(feed_AI)[0]  # Get the first prediction
+            else:
+                print(f"Warning: Model file not found at {model_path}")
+                predicted_score = 0
 
             message = ""
 
@@ -169,7 +177,7 @@ def predict_wine_score():
     test_1 = "test_1_value..."
 
     return render_template('virtual_sommelier.html', testing_1=test_1, wine_type=wine_type, one_hot_wine_type=one_hot_wine_type, taste_notes=taste_notes, wine_country=wine_country, 
-                           wine_price=wine_price, feed_AI=feed_AI, predicted_score=round(predicted_score[0], 2), message=message, 
+                           wine_price=wine_price, feed_AI=feed_AI, predicted_score=round(predicted_score, 2), message=message, 
                            )
 
 
