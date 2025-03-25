@@ -8,8 +8,8 @@
     <title>Wine-O Vation</title>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
-    <link href="../static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://d3js.org/d3.v2.min.js" charset="utf-8"></script>
@@ -57,7 +57,7 @@
 
             </div>
         </div>
-        <div class="parallax"><img src="../static/media/wine_8.jpg" alt="Unsplashed background img 1"></div>
+        <div class="parallax"><img src="{{ url_for('static', filename='media/wine_8.jpg') }}" alt="Unsplashed background img 1"></div>
     </div>
 
 
@@ -255,7 +255,7 @@
                 </div>
             </div>
         </div>
-        <div class="parallax"><img src="../static/media/wine_2.jpg" alt="Unsplashed background img 2"></div>
+        <div class="parallax"><img src="{{ url_for('static', filename='media/wine_2.jpg') }}" alt="Unsplashed background img 2"></div>
     </div>
 
     <div class="container-fluid">
@@ -270,7 +270,7 @@
                     <div class="card large col lg4 m4 s12 center" style="width: 1000px; height: 900px" id="score_card">
 
                         <div class="card-image waves-effect waves-block waves-light center">
-                            <img class="activator" src="../static/media/wine_4.jpg">
+                            <img class="activator" src="{{ url_for('static', filename='media/wine_4.jpg') }}">
                         </div>
                         <div class="card-content">
                             <span class="card-title">
