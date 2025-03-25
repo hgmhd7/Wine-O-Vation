@@ -82,6 +82,26 @@ except Exception as e:
     master_wine_table = None
     wine_predictions = None
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/story_of_wine')
+def story_of_wine():
+    return render_template('story_of_wine.html')
+
+@app.route('/flavor_notes')
+def flavor_notes():
+    return render_template('flavor_notes.html')
+
+@app.route('/virtual_sommelier')
+def virtual_sommelier():
+    return render_template('virtual_sommelier.html')
+
+@app.route('/wine_recommender')
+def wine_recommender():
+    return render_template('wine_recommender.html')
+
 @app.route('/recommend_wines', methods=["POST"])
 def recommend_wines():
     if master_wine_table is None:
@@ -95,10 +115,25 @@ def recommend_wines():
         # Use Pandas to perform the sql query
         stmt = db.session.query(master_wine_table).statement
         df = pd.read_sql_query(stmt, db.session.bind)
-        wine_list = df.to_dict(orient='records')  # Changed from to_list() to to_dict()
+        wine_list = df.to_dict(orient='records')
         return jsonify(wine_list)
     except Exception as e:
         print(f"Error querying database: {str(e)}")
         return jsonify({"error": f"Database query failed: {str(e)}"})
 
-# ... rest of your existing code ...
+@app.route('/get_wine_rating', methods=["POST"])
+def get_wine_rating():
+    if wine_predictions is None:
+        return jsonify({"error": "Database not available"})
+        
+    try:
+        stmt = db.session.query(wine_predictions).statement
+        df = pd.read_sql_query(stmt, db.session.bind)
+        predictions = df.to_dict(orient='records')
+        return jsonify(predictions)
+    except Exception as e:
+        print(f"Error querying predictions: {str(e)}")
+        return jsonify({"error": f"Database query failed: {str(e)}"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
