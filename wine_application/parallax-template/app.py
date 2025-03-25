@@ -34,7 +34,7 @@ database_url = os.environ['DATABASE_URL']
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-print(f"Using PostgreSQL database: {database_url}")
+print("Initializing PostgreSQL database connection...")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -60,25 +60,25 @@ class WinePredictionsTable(db.Model):
 try:
     # Create tables if they don't exist
     db.create_all()
-    print("Tables verified/created successfully")
+    print("✓ Database tables verified/created successfully")
     
     # Verify tables exist
     inspector = inspect(db.engine)
     table_names = inspector.get_table_names()
-    print(f"Available tables: {table_names}")
+    print(f"✓ Available tables: {table_names}")
     
     # Test database connection
     with db.engine.connect() as conn:
         conn.execute(sqlalchemy.text("SELECT 1"))
-        print("Database connection test successful")
+        print("✓ Database connection test successful")
     
     # Set up references for queries
     master_wine_table = MasterWineTable
     wine_predictions = WinePredictionsTable
     
 except Exception as e:
-    print(f"Error initializing database: {str(e)}")
-    print(f"Database URL being used: {database_url}")
+    print(f"❌ Error initializing PostgreSQL database: {str(e)}")
+    print(f"Database URL being used (redacted): {database_url[:15]}...{database_url[-15:]}")
     master_wine_table = None
     wine_predictions = None
 
