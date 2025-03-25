@@ -23,34 +23,50 @@ app = Flask(__name__,
     template_folder='templates')
 Material(app)
 
-# Database Setup
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///wine_cellar.sqlite')
+# Database Setup - PostgreSQL only
+database_url = os.environ['DATABASE_URL']
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+print(f"Using PostgreSQL database: {database_url}")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# reflect an existing database into a new model
-Base = automap_base()
+# Define the tables
+class MasterWineTable(db.Model):
+    __tablename__ = 'master_wine_table'
+    id = db.Column(db.Integer, primary_key=True)
+    wine_type = db.Column(db.String(50))
+    taste_notes = db.Column(db.String(100))
+    wine_country = db.Column(db.String(50))
+    wine_price = db.Column(db.Float)
+    wine_score = db.Column(db.Float)
+
+class WinePredictionsTable(db.Model):
+    __tablename__ = 'wine_predictions_table'
+    id = db.Column(db.Integer, primary_key=True)
+    predicted_score = db.Column(db.Float)
+    actual_score = db.Column(db.Float)
 
 try:
-    # reflect the tables
-    Base.prepare(db.engine, reflect=True)
-    
-    # Save references to each table
-    master_wine_table = Base.classes.master_wine_table
-    wine_predictions = Base.classes.wine_predictions_table
+    # Create tables if they don't exist
+    db.create_all()
+    print("Tables verified/created successfully")
     
     # Verify tables exist
     inspector = inspect(db.engine)
     table_names = inspector.get_table_names()
     print(f"Available tables: {table_names}")
     
+    # Set up references for queries
+    master_wine_table = MasterWineTable
+    wine_predictions = WinePredictionsTable
+    
 except Exception as e:
     print(f"Error initializing database: {str(e)}")
+    print(f"Database URL being used: {database_url}")
     master_wine_table = None
     wine_predictions = None
 
