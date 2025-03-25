@@ -27,9 +27,13 @@ app = Flask(__name__,
 Material(app)
 
 # Database Setup - PostgreSQL only
+if 'DATABASE_URL' not in os.environ:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
 database_url = os.environ['DATABASE_URL']
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 print(f"Using PostgreSQL database: {database_url}")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -62,6 +66,11 @@ try:
     inspector = inspect(db.engine)
     table_names = inspector.get_table_names()
     print(f"Available tables: {table_names}")
+    
+    # Test database connection
+    with db.engine.connect() as conn:
+        conn.execute(sqlalchemy.text("SELECT 1"))
+        print("Database connection test successful")
     
     # Set up references for queries
     master_wine_table = MasterWineTable
