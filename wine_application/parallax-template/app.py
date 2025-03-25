@@ -22,7 +22,7 @@ base_dir = os.path.abspath(os.path.dirname(__file__))
 #creating instance of the class
 app = Flask(__name__, 
     static_url_path='/static',
-    static_folder=os.path.join(base_dir, 'static'),
+    static_folder=os.path.join(os.path.dirname(base_dir), 'static'),
     template_folder=os.path.join(base_dir, 'templates'))
 Material(app)
 
