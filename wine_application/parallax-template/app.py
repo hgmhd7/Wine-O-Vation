@@ -16,11 +16,14 @@ from flask_sqlalchemy import SQLAlchemy
 # ML Pkg
 from sklearn.externals import joblib
 
+# Get the absolute path to the directory containing this file
+base_dir = os.path.abspath(os.path.dirname(__file__))
+
 #creating instance of the class
 app = Flask(__name__, 
     static_url_path='/static',
-    static_folder='static',
-    template_folder='templates')
+    static_folder=os.path.join(base_dir, 'static'),
+    template_folder=os.path.join(base_dir, 'templates'))
 Material(app)
 
 # Database Setup - PostgreSQL only

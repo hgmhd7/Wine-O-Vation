@@ -18,8 +18,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="../static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
-  <link href="../static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet" media="screen,projection" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://d3js.org/d3.v2.min.js" charset="utf-8"></script>
@@ -70,7 +70,7 @@
 
       </div>
     </div>
-    <div class="parallax"><img src="../static/media/wine_8.jpg" alt="Unsplashed background img 1"></div>
+    <div class="parallax"><img src="{{ url_for('static', filename='media/wine_8.jpg') }}" alt="Unsplashed background img 1"></div>
   </div>
 
 
@@ -149,7 +149,7 @@
           <p class="left-align light">
             <h5>We are a team of data driven professionals with a knack for data analysis and a
               thirst for wine. With over 60 combined years of industry experience from a variety of different areas, we
-              are pleased to present to you “Wine-O Vation”. Please join us on this journey through wine country to
+              are pleased to present to you "Wine-O Vation". Please join us on this journey through wine country to
               discover all the wonderful things this amazing drink has to offer.</h5>
           </p>
         </div>
@@ -159,31 +159,31 @@
         <div class="container-fluid">
 
           <div class="col lg2 md2 sm12">
-            <img class="activator" src="static/media/WF Pic 1.jpg"
+            <img class="activator" src="{{ url_for('static', filename='media/WF Pic 1.jpg') }}"
               style="width: 225px; height: 215px; padding-right: 20px">
             <h5>Howard G. Mitchell III</h5>
           </div>
 
           <div class="col lg2 md2 sm12">
-            <img class="activator" src="static/media/john1.jpg"
+            <img class="activator" src="{{ url_for('static', filename='media/john1.jpg') }}"
               style="width: 200px; height: 215px; padding-right: 20px">
             <h5>John Sachs</h5>
           </div>
 
           <div class="col lg2 md2 sm12">
-            <img class="activator" src="static/media/Suzanne_headshot.png"
+            <img class="activator" src="{{ url_for('static', filename='media/Suzanne_headshot.png') }}"
               style="width: 225px; height: 215px; padding-right: 20px">
             <h5>Suzanne Polk</h5>
           </div>
 
           <div class="col lg2 md2 sm12">
-            <img class="activator" src="static/media/Kevin_headshot.png"
+            <img class="activator" src="{{ url_for('static', filename='media/Kevin_headshot.png') }}"
               style="width: 225px; height: 215px; padding-right: 20px">
             <h5>Kevin Heaney</h5>
           </div>
 
           <div class="col lg2 md2 sm12">
-            <img class="activator" src="static/media/Rodney_professional_headshot.png"
+            <img class="activator" src="{{ url_for('static', filename='media/Rodney_professional_headshot.png') }}"
               style="width: 225px; height: 215px; padding-right: 20px">
             <h5>Rodney Mosquito</h5>
           </div>
