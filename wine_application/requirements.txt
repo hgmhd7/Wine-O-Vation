@@ -1,5 +1,5 @@
 flask==2.0.1
-werkzeug==2.0.1
+werkzeug==3.1.4
 sqlalchemy==1.4.23
 flask-sqlalchemy==2.5.1
 flask-material==0.1.1
